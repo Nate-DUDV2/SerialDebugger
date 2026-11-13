@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationIcon>Assets\SpyPortDebugger.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.2.5" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
+		<PackageReference Include="System.IO.Ports" Version="9.0.2" />
+		<PackageReference Include="System.Management" Version="9.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AvaloniaResource Include="Assets\**" />
+	</ItemGroup>
+</Project>

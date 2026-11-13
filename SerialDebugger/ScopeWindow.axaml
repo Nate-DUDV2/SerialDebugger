@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SerialDebugger.ScopeWindow"
+        Title="SerialDebugger — UART Waveform &amp; Modem Line Logic Scope"
+        Width="980" Height="560"
+        Background="#1E1E1E"
+        Closing="Window_Closing">
+
+	<Grid Margin="14" RowDefinitions="Auto,*,Auto">
+
+		<!-- Header -->
+		<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+			<StackPanel Grid.Column="0" Orientation="Horizontal">
+				<TextBlock Text="DIGITAL UART BIT-FRAME &amp; RS-232 CONTROL LINE LOGIC ANALYZER"
+                           Foreground="#00A2FF" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,16,0"/>
+				<TextBlock x:Name="TxtFrameInfo" Text="Waiting for UART frame..." Foreground="#FFB74D" VerticalAlignment="Center"/>
+			</StackPanel>
+			<StackPanel Grid.Column="1" Orientation="Horizontal">
+				<CheckBox x:Name="ChkPause" Content="Freeze" Foreground="#E0E0E0" Margin="0,0,12,0" VerticalAlignment="Center"/>
+				<Button Content="Clear" Width="70" Background="#3F3F46" Foreground="#F1F1F1" Click="BtnClear_Click"/>
+			</StackPanel>
+		</Grid>
+
+		<!-- Logic Scope Canvas -->
+		<Border Grid.Row="1" BorderBrush="#555555" BorderThickness="1" Background="#121417" ClipToBounds="True">
+			<Canvas x:Name="ScopeCanvas" SizeChanged="ScopeCanvas_SizeChanged"/>
+		</Border>
+
+		<!-- Legend -->
+		<Border Grid.Row="2" Background="#2D2D30" BorderBrush="#555555" BorderThickness="1" Padding="10,6" Margin="0,10,0,0">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="Top Trace: Reconstructed UART Bitstream (START=0, D0..Dn LSB-first, PARITY, STOP=1)" Foreground="#4AF626" Margin="0,0,24,0"/>
+				<TextBlock Text="Lower Traces: Live Hardware Modem Lines (CTS, DSR, CD, RTS, DTR)" Foreground="#00A2FF"/>
+			</StackPanel>
+		</Border>
+	</Grid>
+</Window>

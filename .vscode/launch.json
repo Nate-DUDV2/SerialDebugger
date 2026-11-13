@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch SerialDebugger",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/SerialDebugger/bin/Debug/net9.0/SerialDebugger.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/SerialDebugger",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "windows": {
+                "program": "${workspaceFolder}/SerialDebugger/bin/Debug/net9.0/SerialDebugger.exe",
+                "env": {
+                    "DOTNET_ROOT": "C:\\Program Files\\dotnet",
+                    "PATH": "C:\\Program Files\\dotnet;${env:PATH}"
+                }
+            },
+            "linux": {
+                "program": "${workspaceFolder}/SerialDebugger/bin/Debug/net9.0/SerialDebugger"
+            },
+            "osx": {
+                "program": "${workspaceFolder}/SerialDebugger/bin/Debug/net9.0/SerialDebugger"
+            }
+        }
+    ]
+}

@@ -1,0 +1,100 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SerialDebugger"
+        x:Class="SerialDebugger.PacketMonitorWindow"
+        Title="Advanced Packet Monitor"
+        Icon="avares://SerialDebugger/Assets/SpyPortDebugger.ico"
+        Width="1120" Height="620"
+        Background="#1E1E1E">
+
+	<Grid Margin="12" ColumnDefinitions="1.35*,12,*">
+
+		<!-- Left Panel: Session Packets List -->
+		<Border Grid.Column="0" Background="#252526" BorderBrush="#444444" BorderThickness="1" Padding="10">
+			<Grid RowDefinitions="Auto,Auto,*">
+
+				<!-- Title & Clear Button -->
+				<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+					<TextBlock Grid.Column="0" Text="Session Packets List:"
+                               Foreground="#E0E0E0" FontWeight="Bold" FontSize="13"
+                               VerticalAlignment="Center"/>
+					<Button Grid.Column="1" Content="Clear"
+                            Background="#3F3F46" Foreground="#F1F1F1" BorderBrush="#555555"
+                            Padding="10,2" FontSize="11"
+                            Click="BtnClear_Click"/>
+				</Grid>
+
+				<!-- Column Header Bar -->
+				<Border Grid.Row="1" Background="#2D2D30" BorderBrush="#3F3F46" BorderThickness="1,1,1,0" Padding="10,7">
+					<Grid ColumnDefinitions="50,105,110,*,65">
+						<TextBlock Grid.Column="0" Text="ID" Foreground="#00A2FF" FontWeight="Bold" FontSize="12"/>
+						<TextBlock Grid.Column="1" Text="Time" Foreground="#00A2FF" FontWeight="Bold" FontSize="12"/>
+						<TextBlock Grid.Column="2" Text="Direction" Foreground="#00A2FF" FontWeight="Bold" FontSize="12"/>
+						<TextBlock Grid.Column="3" Text="Data (ASCII)" Foreground="#00A2FF" FontWeight="Bold" FontSize="12"/>
+						<TextBlock Grid.Column="4" Text="Length" Foreground="#00A2FF" FontWeight="Bold" FontSize="12" HorizontalAlignment="Right"/>
+					</Grid>
+				</Border>
+
+				<!-- Packet Rows List -->
+				<ListBox x:Name="LstPackets" Grid.Row="2"
+                         Background="#1B1B1C" BorderBrush="#3F3F46" BorderThickness="1"
+                         Padding="0">
+					<ListBox.Styles>
+						<Style Selector="ListBoxItem">
+							<Setter Property="Padding" Value="10,5"/>
+							<Setter Property="Margin" Value="0"/>
+						</Style>
+					</ListBox.Styles>
+					<ListBox.ItemTemplate>
+						<DataTemplate x:DataType="local:PacketRow">
+							<Grid ColumnDefinitions="50,105,110,*,65">
+								<TextBlock Grid.Column="0" Text="{Binding Id}" Foreground="#CCCCCC"
+                                           FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace" FontSize="12"/>
+								<TextBlock Grid.Column="1" Text="{Binding Time}" Foreground="#AAAAAA"
+                                           FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace" FontSize="12"/>
+								<TextBlock Grid.Column="2" Text="{Binding Direction}" Foreground="{Binding DirectionBrush}" FontWeight="Bold"
+                                           FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace" FontSize="12"/>
+								<TextBlock Grid.Column="3" Text="{Binding AsciiData}" Foreground="#E0E0E0" TextTrimming="CharacterEllipsis"
+                                           FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace" FontSize="12"/>
+								<TextBlock Grid.Column="4" Text="{Binding Length}" Foreground="#CCCCCC" HorizontalAlignment="Right"
+                                           FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace" FontSize="12"/>
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Grid>
+		</Border>
+
+		<!-- Right Column: HEX Write Dump (Top) & HEX Read Dump (Bottom) -->
+		<Grid Grid.Column="2" RowDefinitions="*,12,*">
+
+			<!-- Top-Right: HEX Write Dump (PC -> HW) -->
+			<Border Grid.Row="0" Background="#252526" BorderBrush="#444444" BorderThickness="1" Padding="10">
+				<Grid RowDefinitions="Auto,*">
+					<TextBlock Grid.Row="0" Text="HEX Write Dump (PC -> HW):"
+                               Foreground="#00A2FF" FontWeight="Bold" FontSize="13"
+                               Margin="0,0,0,8"/>
+					<TextBox x:Name="TxtHexWrite" Grid.Row="1"
+                             IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                             Background="#050505" Foreground="#00A2FF" BorderBrush="#3F3F46"
+                             FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace"
+                             FontSize="12.5"/>
+				</Grid>
+			</Border>
+
+			<!-- Bottom-Right: HEX Read Dump (HW -> PC) -->
+			<Border Grid.Row="2" Background="#252526" BorderBrush="#444444" BorderThickness="1" Padding="10">
+				<Grid RowDefinitions="Auto,*">
+					<TextBlock Grid.Row="0" Text="HEX Read Dump (HW -> PC):"
+                               Foreground="#4AF626" FontWeight="Bold" FontSize="13"
+                               Margin="0,0,0,8"/>
+					<TextBox x:Name="TxtHexRead" Grid.Row="1"
+                             IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                             Background="#050505" Foreground="#4AF626" BorderBrush="#3F3F46"
+                             FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace"
+                             FontSize="12.5"/>
+				</Grid>
+			</Border>
+		</Grid>
+	</Grid>
+</Window>

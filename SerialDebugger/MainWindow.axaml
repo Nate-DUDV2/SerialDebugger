@@ -1,0 +1,243 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SerialDebugger.MainWindow"
+        Title="SerialDebugger" Height="780" Width="1380"
+        Icon="avares://SerialDebugger/Assets/SpyPortDebugger.ico"
+        Background="#1E1E1E"
+        Loaded="Window_Loaded" Closing="Window_Closing">
+
+	<Window.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="#E0E0E0"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="0,0,5,0"/>
+		</Style>
+		<Style Selector="CheckBox">
+			<Setter Property="Foreground" Value="#E0E0E0"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="0,0,7,0"/>
+		</Style>
+		<Style Selector="RadioButton">
+			<Setter Property="Foreground" Value="#E0E0E0"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="Background" Value="#3F3F46"/>
+			<Setter Property="Foreground" Value="#F1F1F1"/>
+			<Setter Property="BorderBrush" Value="#555555"/>
+			<Setter Property="Padding" Value="5,5"/>
+			<Setter Property="Margin" Value="0,0,4,0"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+		<Style Selector="TextBox">
+			<Setter Property="Background" Value="#2D2D30"/>
+			<Setter Property="Foreground" Value="#4AF626"/>
+			<Setter Property="BorderBrush" Value="#555555"/>
+			<Setter Property="CaretBrush" Value="#FFFFFF"/>
+			<Setter Property="Padding" Value="6,4"/>
+			<Setter Property="MinWidth" Value="0"/>
+		</Style>
+	</Window.Styles>
+
+	<Grid Margin="15" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+
+		<!-- Configuration Bar -->
+		<Border Grid.Row="0" BorderBrush="#555555" BorderThickness="1" Padding="15,10" Margin="0,0,0,12" Background="#252526">
+			<Grid RowDefinitions="Auto,Auto,Auto">
+
+				<!-- Row 0: Operation Mode & Live Hardware Pin LEDs -->
+				<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+					<StackPanel Grid.Column="0" Orientation="Horizontal">
+						<TextBlock Text="Operation Mode:" FontWeight="Bold" Width="135" Foreground="#00A2FF"/>
+						<RadioButton x:Name="RdoNormalMode" Content="Terminal / Loopback (Port A)" IsChecked="True" IsCheckedChanged="Mode_Changed" Margin="0,0,18,0"/>
+						<RadioButton x:Name="RdoSpyMode" Content="SpyPort Proxy (Bridge A &amp; B)" IsCheckedChanged="Mode_Changed" Margin="0,0,18,0"/>
+						<CheckBox x:Name="ChkBenchTest" Content="Bench Test (No Bridge)" IsChecked="True" Foreground="#FFB74D" IsCheckedChanged="ChkBenchTest_Changed"
+                                  ToolTip.Tip="Keep checked when Port A and Port B are wired directly together for port-to-port diagnostics"/>
+					</StackPanel>
+
+					<!-- Live Port A Modem Line Indicators -->
+					<Border Grid.Column="1" BorderBrush="#444444" BorderThickness="1" Background="#1B1B1C" Padding="8,4">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Port A Lines:" Foreground="#888888" FontSize="11" Margin="0,0,8,0"/>
+							<Ellipse x:Name="LedCTS" Width="10" Height="10" Fill="#555555" Margin="0,0,4,0"/>
+							<TextBlock Text="CTS" FontSize="11" Margin="0,0,10,0"/>
+							<Ellipse x:Name="LedDSR" Width="10" Height="10" Fill="#555555" Margin="0,0,4,0"/>
+							<TextBlock Text="DSR" FontSize="11" Margin="0,0,10,0"/>
+							<Ellipse x:Name="LedCD" Width="10" Height="10" Fill="#555555" Margin="0,0,4,0"/>
+							<TextBlock Text="CD" FontSize="11" Margin="0"/>
+						</StackPanel>
+					</Border>
+				</Grid>
+
+				<!-- Row 1: Hardware Port A & Framing -->
+				<Grid Grid.Row="1" ColumnDefinitions="135,*,Auto" Margin="0,0,0,10">
+					<TextBlock Grid.Column="0" Text="Hardware Port (A):"/>
+					<ComboBox x:Name="CmbPortA" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,6,0"/>
+
+					<StackPanel Grid.Column="2" Orientation="Horizontal">
+						<Button x:Name="BtnRefreshPorts" Content="↻" ToolTip.Tip="Refresh Serial Ports" Width="36" Margin="0,0,10,0" Click="BtnRefreshPorts_Click"/>
+
+						<TextBlock Text="Baud:"/>
+						<ComboBox x:Name="CmbBaudRate" Width="105" SelectedIndex="7" Margin="0,0,8,0">
+							<ComboBoxItem Content="1200"/>
+							<ComboBoxItem Content="2400"/>
+							<ComboBoxItem Content="4800"/>
+							<ComboBoxItem Content="9600"/>
+							<ComboBoxItem Content="19200"/>
+							<ComboBoxItem Content="38400"/>
+							<ComboBoxItem Content="57600"/>
+							<ComboBoxItem Content="115200"/>
+							<ComboBoxItem Content="230400"/>
+							<ComboBoxItem Content="460800"/>
+							<ComboBoxItem Content="921600"/>
+						</ComboBox>
+
+						<TextBlock Text="Data:"/>
+						<ComboBox x:Name="CmbDataBits" Width="68" SelectedIndex="0" Margin="0,0,8,0">
+							<ComboBoxItem Content="8"/>
+							<ComboBoxItem Content="7"/>
+						</ComboBox>
+
+						<TextBlock Text="Parity:"/>
+						<ComboBox x:Name="CmbParity" Width="88" SelectedIndex="0" Margin="0,0,8,0">
+							<ComboBoxItem Content="None"/>
+							<ComboBoxItem Content="Even"/>
+							<ComboBoxItem Content="Odd"/>
+						</ComboBox>
+
+						<TextBlock Text="Stop:"/>
+						<ComboBox x:Name="CmbStopBits" Width="68" SelectedIndex="0" Margin="0,0,8,0">
+							<ComboBoxItem Content="1"/>
+							<ComboBoxItem Content="2"/>
+						</ComboBox>
+
+						<TextBlock Text="Flow:"/>
+						<ComboBox x:Name="CmbHandshake" Width="115" SelectedIndex="0" Margin="0,0,8,0">
+							<ComboBoxItem Content="None"/>
+							<ComboBoxItem Content="RTS/CTS"/>
+							<ComboBoxItem Content="XON/XOFF"/>
+							<ComboBoxItem Content="RTS/CTS + XON/XOFF"/>
+						</ComboBox>
+
+						<TextBlock Text="EOL:"/>
+						<ComboBox x:Name="CmbEOL" Width="86" SelectedIndex="0" Margin="0">
+							<ComboBoxItem Content="CRLF"/>
+							<ComboBoxItem Content="CR"/>
+							<ComboBoxItem Content="LF"/>
+							<ComboBoxItem Content="None"/>
+						</ComboBox>
+					</StackPanel>
+				</Grid>
+
+				<!-- Row 2: Secondary / Proxy Port B & Connect Buttons -->
+				<Grid Grid.Row="2" ColumnDefinitions="135,*,Auto">
+					<TextBlock Grid.Column="0" Text="Secondary Port (B):"/>
+					<ComboBox x:Name="CmbPortB" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,6,0" IsEnabled="False"/>
+
+					<StackPanel Grid.Column="2" Orientation="Horizontal">
+						<Border Width="36" Margin="0,0,10,0"/>
+						<Button x:Name="BtnConnect" Content="CONNECT" Background="#2E7D32" Foreground="White" FontWeight="Bold" Width="140" Margin="0,0,6,0" Click="BtnConnect_Click"/>
+						<Button x:Name="BtnDisconnect" Content="STOP" Background="#C62828" Foreground="White" FontWeight="Bold" Width="95" Margin="0" Click="BtnDisconnect_Click" IsEnabled="False"/>
+					</StackPanel>
+				</Grid>
+			</Grid>
+		</Border>
+
+		<!-- Tools & Diagnostics Bar -->
+		<Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+			<StackPanel Grid.Column="0" Orientation="Horizontal">
+				<CheckBox x:Name="ChkHexView" Content="HEX"/>
+				<CheckBox x:Name="ChkTimestamp" Content="Time" IsChecked="True"/>
+				<CheckBox x:Name="ChkAutoScroll" Content="Scroll" IsChecked="True"/>
+				<CheckBox x:Name="ChkLocalEcho" Content="Echo"/>
+				<CheckBox x:Name="ChkRTS" Content="RTS" IsCheckedChanged="ChkLineControl_Changed" IsEnabled="False"/>
+				<CheckBox x:Name="ChkDTR" Content="DTR" IsChecked="True" IsCheckedChanged="ChkLineControl_Changed" IsEnabled="False"/>
+
+				<Border BorderBrush="#555555" BorderThickness="1" Padding="5,2" Margin="0,0,8,0">
+					<StackPanel Orientation="Horizontal">
+						<CheckBox x:Name="ChkTrap" Content="Trap:" IsChecked="True" Margin="0,0,4,0"
+                                  ToolTip.Tip="Auto-reply when trigger text arrives (Port A, or Port B in Bench Test mode)"/>
+						<TextBox x:Name="TxtTrigger" Width="48" Padding="4,2" Margin="0,0,4,0" Text="PING" Foreground="#E0E0E0"/>
+						<TextBlock Text="-&gt;" Margin="0,0,4,0"/>
+						<TextBox x:Name="TxtReply" Width="48" Padding="4,2" Margin="0" Text="PONG" Foreground="#E0E0E0"/>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Orientation="Horizontal">
+				<Button x:Name="BtnRunDiag" Content="⚡ Pass/Fail" Background="#00897B" Foreground="White" FontWeight="Bold" Width="104" Click="BtnRunDiag_Click" IsEnabled="False"
+                        ToolTip.Tip="Run automated 20-packet bidirectional burst &amp; UART hardware error diagnostic"/>
+				<Button x:Name="BtnScope" Content="Scope" Background="#00A2FF" Foreground="White" FontWeight="Bold" Width="72" Click="BtnScope_Click"
+                        ToolTip.Tip="Open UART waveform and RS-232 control line logic analyzer"/>
+				<Button x:Name="BtnByteVis" Content="Visualizer" Background="#9C27B0" Foreground="White" FontWeight="Bold" Width="86" Click="BtnByteVis_Click"
+                        ToolTip.Tip="Open 16-byte HEX/ASCII dump and bit-level inspector"/>
+				<Button x:Name="BtnPacketMon" Content="Packets" Background="#E65100" Foreground="White" FontWeight="Bold" Width="76" Margin="0,0,8,0" Click="BtnPacketMon_Click"
+                        ToolTip.Tip="Open packet frame analyzer with delta timing and Modbus CRC-16"/>
+
+				<Button x:Name="BtnBreak" Content="Break" Width="68" Click="BtnBreak_Click" IsEnabled="False"
+                        ToolTip.Tip="Transmit a 250ms RS-232 line BREAK signal on Port A"/>
+				<Button x:Name="BtnPinout" Content="Pinouts" Width="68" Click="BtnPinout_Click"
+                        ToolTip.Tip="Open DB9 RS-232 &amp; Neousys RS-422/485 wiring reference"/>
+				<Button x:Name="BtnPopOut" Content="Pop-Out" Width="68" Click="BtnPopOut_Click"
+                        ToolTip.Tip="Open a separate floating monitor window"/>
+				<Button x:Name="BtnClear" Content="Clear" Width="68" Click="BtnClear_Click"/>
+				<Button x:Name="BtnSaveLog" Content="Save" Width="68" Margin="0" Click="BtnSaveLog_Click"/>
+			</StackPanel>
+		</Grid>
+
+		<!-- Traffic Log Output -->
+		<TextBox x:Name="TxtOutput" Grid.Row="2" IsReadOnly="True"
+                 AcceptsReturn="True" TextWrapping="Wrap"
+                 FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace"
+                 Margin="0,0,0,10"/>
+
+		<!-- Quick-Fire Macro Bar -->
+		<Border Grid.Row="3" BorderBrush="#444444" BorderThickness="1" Background="#252526" Padding="8,6" Margin="0,0,0,10">
+			<Grid ColumnDefinitions="Auto,*,*,*,*">
+				<TextBlock Grid.Column="0" Text="Quick Macros (Port A):" Foreground="#00A2FF" FontWeight="Bold" Margin="0,0,10,0"/>
+
+				<Grid Grid.Column="1" ColumnDefinitions="*,Auto" Margin="0,0,8,0">
+					<TextBox x:Name="TxtMacro1" Grid.Column="0" Text="PING" Foreground="#E0E0E0" Margin="0,0,4,0"/>
+					<Button x:Name="BtnMacro1" Grid.Column="1" Content="Send 1" Width="72" IsEnabled="False" Click="BtnMacro_Click" Tag="1" Margin="0"/>
+				</Grid>
+
+				<Grid Grid.Column="2" ColumnDefinitions="*,Auto" Margin="0,0,8,0">
+					<TextBox x:Name="TxtMacro2" Grid.Column="0" Text="VER?" Foreground="#E0E0E0" Margin="0,0,4,0"/>
+					<Button x:Name="BtnMacro2" Grid.Column="1" Content="Send 2" Width="72" IsEnabled="False" Click="BtnMacro_Click" Tag="2" Margin="0"/>
+				</Grid>
+
+				<Grid Grid.Column="3" ColumnDefinitions="*,Auto" Margin="0,0,8,0">
+					<TextBox x:Name="TxtMacro3" Grid.Column="0" Text="STAT?" Foreground="#E0E0E0" Margin="0,0,4,0"/>
+					<Button x:Name="BtnMacro3" Grid.Column="1" Content="Send 3" Width="72" IsEnabled="False" Click="BtnMacro_Click" Tag="3" Margin="0"/>
+				</Grid>
+
+				<Grid Grid.Column="4" ColumnDefinitions="*,Auto">
+					<TextBox x:Name="TxtMacro4" Grid.Column="0" Text="STOP" Foreground="#E0E0E0" Margin="0,0,4,0"/>
+					<Button x:Name="BtnMacro4" Grid.Column="1" Content="Send 4" Width="72" IsEnabled="False" Click="BtnMacro_Click" Tag="4" Margin="0"/>
+				</Grid>
+			</Grid>
+		</Border>
+
+		<!-- Manual Injection & Cyclic Repeat Bar -->
+		<Grid Grid.Row="4" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto" Margin="0,0,0,10">
+			<TextBlock Grid.Column="0" Text="Inject Command:" Margin="0,0,10,0"/>
+			<TextBox x:Name="TxtInput" Grid.Column="1" Margin="0,0,10,0" VerticalContentAlignment="Center" Foreground="#E0E0E0" KeyDown="TxtInput_KeyDown"/>
+			<CheckBox x:Name="ChkInjectHex" Grid.Column="2" Content="HEX" Margin="0,0,10,0"/>
+			<CheckBox x:Name="ChkRepeat" Grid.Column="3" Content="Repeat (ms):" Margin="0,0,4,0" IsCheckedChanged="ChkRepeat_Changed" IsEnabled="False"/>
+			<TextBox x:Name="TxtRepeatMs" Grid.Column="4" Width="60" Text="500" Foreground="#E0E0E0" Margin="0,0,10,0"/>
+			<Button x:Name="BtnSendA" Grid.Column="5" Content="Send to Port A" Width="125" Click="BtnSendA_Click" IsEnabled="False" Margin="0,0,8,0"/>
+			<Button x:Name="BtnSendB" Grid.Column="6" Content="Send to Port B" Width="125" Click="BtnSendB_Click" IsEnabled="False" Margin="0"/>
+		</Grid>
+
+		<!-- Status Bar -->
+		<Border Grid.Row="5" Background="#2D2D30" BorderBrush="#555555" BorderThickness="1" Padding="10,6">
+			<Grid ColumnDefinitions="Auto,Auto,Auto,*">
+				<TextBlock x:Name="TxtTxBytes" Grid.Column="0" Text="Port A Transmitted: 0 bytes" Foreground="#00A2FF" Margin="0,0,20,0"/>
+				<TextBlock x:Name="TxtRxBytes" Grid.Column="1" Text="Port A Received: 0 bytes" Foreground="#4AF626" Margin="0,0,16,0"/>
+				<Button x:Name="BtnResetCounters" Grid.Column="2" Content="Reset" Padding="10,2" FontSize="11" Click="BtnResetCounters_Click"/>
+				<TextBlock x:Name="TxtPlatform" Grid.Column="3" HorizontalAlignment="Right" Foreground="#888888" Margin="0"/>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>
