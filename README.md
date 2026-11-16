@@ -1,32 +1,153 @@
 # SerialDebugger
 
-A cross-platform industrial serial port debugger, protocol analyzer, and bench-testing suite built with **.NET 9.0** and **Avalonia UI**. Designed to run natively on **Windows**, **Linux**, and **macOS** from a single codebase or standalone USB executables.
+**Cross-platform industrial serial port debugger, protocol analyzer & bench-testing suite**
+
+Built with **.NET 9** + **Avalonia UI** · Runs natively on **Windows · Linux · macOS**  
+Single codebase · Self-contained single-file executables · No runtime required on target machines
 
 ---
 
-## Key Features
+<p align="center">
+  <img src="screenshot-main.png" alt="SerialDebugger Main Window" width="900"/>
+</p>
 
-### Operation Modes
-* **Terminal / Loopback (Port A):** Direct serial communication and single-port hardware loopback testing.
-* **SpyPort Proxy (Bridge A & B):** Transparent man-in-the-middle serial sniffer bridging traffic between two physical or virtual ports (`HW <-> PC`).
-* **Bench Test (No Bridge):** Independent dual-port bench testing with isolated TX/RX tracking and per-port auto-reply rules.
-
-### Floating Diagnostic Suite
-* **Byte Visualizer:** Renders UART frames as color-coded square waveforms—neon green **`START`** bit, alternating red/blue data bits **`0`–`7`** (LSB-first), and magenta **`STOP`** bit—with aligned `ASCII`, `HEX`, `DEC`, and `BIN` readouts beneath each byte.
-* **Advanced Packet Monitor:** Displays a timestamped packet table (`ID`, `Time`, `Direction`, `Data (ASCII)`, `Length`) alongside dedicated **`HEX Write Dump (PC -> HW)`** and **`HEX Read Dump (HW -> PC)`** panes.
-* **Logic Scope:** Real-time waveform viewer for serial framing and RS-232 control lines.
-* **DB9 Wiring & Pinout Guide:** Built-in quick-reference cheat-sheet for RS-232 null-modem, loopback plugs, RS-422 full-duplex, and RS-485 half-duplex pinouts.
-* **Pop-Out Traffic Monitor:** Detachable live traffic console for multi-monitor bench setups.
-
-### Hardware Control & Automation
-* **1-Click Automated Pass/Fail Diagnostic:** Runs a 20-packet stress sequence (incremental ASCII frames plus `0x55`/`0xAA`/`0x00`/`0xFF` bit-pattern stress frames) while monitoring UART framing, parity, and overrun errors.
-* **Line Control & Live Status LEDs:** Manual **`RTS`** and **`DTR`** toggles, **`250ms BREAK`** signal pulse, and live **`CTS`**, **`DSR`**, and **`CD`** indicators.
-* **Traffic Injection & Macros:** Send ASCII or HEX payloads with selectable EOL (`CRLF`, `CR`, `LF`, `None`), cyclic auto-repeat timer (`ms`), 4 customizable quick macros, and **`Trap` auto-reply** (e.g., `PING -> PONG`).
-* **Session Logging:** Timestamped traffic view with HEX/ASCII toggle, auto-scroll, byte counters, and `.txt` log export.
+<p align="center">
+  <em>Bench Test mode · dual-port stress test · auto-reply traps · live line status · one-click Pass/Fail</em>
+</p>
 
 ---
 
-## Project Structure
+## Why SerialDebugger?
+
+Most serial tools are either terminal emulators or expensive logic analyzers.  
+SerialDebugger sits in the middle: a **real bench instrument** that lets you talk to hardware, spy on traffic, inject macros, and prove a link is solid — all from one dark, focused UI.
+
+Perfect for:
+
+- Embedded developers debugging UART / RS-232 / RS-485
+- Industrial controls (Watlow, PLC, HMI, custom boards)
+- Hardware bring-up and loopback validation
+- Multi-monitor bench setups
+
+---
+
+## Operation Modes
+
+| Mode | What it does |
+|------|--------------|
+| **Terminal / Loopback (Port A)** | Classic single-port terminal + hardware loopback testing |
+| **SpyPort Proxy (Bridge A ↔ B)** | Transparent man-in-the-middle sniffer between two ports |
+| **Bench Test (No Bridge)** | Independent dual-port testing with isolated TX/RX tracking and per-port auto-reply rules |
+
+---
+
+## Floating Diagnostic Suite
+
+### Byte Visualizer
+Renders every UART frame as a color-coded square waveform:
+
+- Neon green **START** bit
+- Alternating red / blue data bits **0–7** (LSB-first)
+- Magenta **STOP** bit
+
+Aligned ASCII · HEX · DEC · BIN readout under each byte.
+
+<p align="center">
+  <img src="screenshot-byte-visualizer.png" alt="Byte Visualizer" width="800"/>
+</p>
+
+### Packet Monitor
+Timestamped packet table + dedicated live HEX dumps:
+
+- `ID · Time · Direction · Data (ASCII) · Length`
+- **HEX Write Dump** (PC → HW)
+- **HEX Read Dump** (HW → PC)
+
+<p align="center">
+  <img src="screenshot-packet-monitor.png" alt="Packet Monitor" width="800"/>
+</p>
+
+### Logic Scope
+Real-time reconstructed UART bitstream + live RS-232 control lines (CTS, DSR, CD, RTS, DTR).
+
+<p align="center">
+  <img src="screenshot-logic-scope.png" alt="Logic Scope / UART Bit-Frame Analyzer" width="900"/>
+</p>
+
+### Also included
+- **DB9 Wiring & Pinout Guide** — null-modem, loopback plug, RS-422 full-duplex, RS-485 half-duplex
+- **Pop-Out Traffic Monitor** — detachable live console for multi-monitor benches
+
+---
+
+## Hardware Control & Automation
+
+- **1-Click Pass/Fail Diagnostic**  
+  20-packet stress sequence (incremental ASCII + `0x55` / `0xAA` / `0x00` / `0xFF` patterns) with framing / parity / overrun monitoring
+
+- **Line Control**  
+  Manual **RTS** / **DTR** toggles · **250 ms BREAK** pulse · live **CTS / DSR / CD** LEDs
+
+- **Traffic Injection & Macros**  
+  ASCII or HEX payloads · selectable EOL (`CRLF` / `CR` / `LF` / `None`) · cyclic auto-repeat · 4 quick macros · **Trap** auto-reply (`PING → PONG`)
+
+- **Session Logging**  
+  Timestamped view · HEX/ASCII toggle · auto-scroll · byte counters · `.txt` export
+
+---
+
+## Getting Started
+
+### Prerequisites
+[.NET 9.0 SDK (x64)](https://dotnet.microsoft.com/download/dotnet/9.0)
+
+### Run from source
+```bash
+dotnet run --project SerialDebugger
+```
+
+---
+
+## Build Standalone Cross-Platform Binaries
+
+Self-contained single-file executables (no .NET runtime needed on the target machine):
+
+```powershell
+# Windows (x64)
+dotnet publish SerialDebugger -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+
+# Linux (x64)
+dotnet publish SerialDebugger -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
+
+# macOS (Apple Silicon)
+dotnet publish SerialDebugger -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=true
+
+# macOS (Intel)
+dotnet publish SerialDebugger -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true
+```
+
+Output lands in:  
+`SerialDebugger/bin/Release/net9.0/<runtime-id>/publish/`
+
+### First-run notes
+
+**Linux**
+```bash
+chmod +x ./SerialDebugger
+sudo usermod -aG dialout $USER   # serial port access
+./SerialDebugger
+```
+
+**macOS**
+```bash
+chmod +x ./SerialDebugger
+xattr -d com.apple.quarantine ./SerialDebugger   # if copied from USB
+./SerialDebugger
+```
+
+---
+
+## Project Layout
 
 ```text
 SerialDebugger/
@@ -50,48 +171,13 @@ SerialDebugger/
 
 ---
 
-## Getting Started
+## License & Credits
 
-### Prerequisites
-* [.NET 9.0 SDK (x64)](https://dotnet.microsoft.com/download/dotnet/9.0)
-
-### Run from Source
-```bash
-dotnet run --project SerialDebugger
-```
+Built for the bench. Designed to stay out of the way until you need it.  
+If it saved you time on a hard-to-reach RS-485 link or an ESP32 bring-up, star the repo.
 
 ---
 
-## Building Standalone Cross-Platform Binaries
-
-Publish self-contained, single-file executables (no .NET runtime required on target bench machines):
-
-```powershell
-# Windows (x64)
-dotnet publish SerialDebugger -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-
-# Linux (x64)
-dotnet publish SerialDebugger -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
-
-# macOS (Apple Silicon M1-M4)
-dotnet publish SerialDebugger -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=true
-
-# macOS (Intel)
-dotnet publish SerialDebugger -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true
-```
-
-Compiled executables are output to `SerialDebugger/bin/Release/net9.0/<runtime-id>/publish/`.
-
-### Linux & macOS First-Run Notes
-* **Linux:** Copy the binary off FAT32/exFAT USB media onto a local Linux directory, grant execute permissions, and ensure your user has serial port permissions:
-  ```bash
-  chmod +x ./SerialDebugger
-  sudo usermod -aG dialout $USER
-  ./SerialDebugger
-  ```
-* **macOS:** Grant execute permissions and clear the quarantine flag if copied from a USB drive:
-  ```bash
-  chmod +x ./SerialDebugger
-  xattr -d com.apple.quarantine ./SerialDebugger
-  ./SerialDebugger
-  ```
+<p align="center">
+  <strong>SerialDebugger</strong> · .NET 9 · Avalonia UI · Windows / Linux / macOS
+</p>
